@@ -56,7 +56,7 @@ def prepare_flask_request(req):
     logger.info('SAML: Prepare Request: Protocol: %s, Host: %s', request_protocol(req), req.host)
 
     return {
-        'https': 'on' if request_protocol(req) == 'https' or req.scheme =='https' else 'off',
+        'https': 'on' if request_protocol(req) == 'https' or req.scheme == 'https' else 'off',
         'http_host': req.host + '/plugin/saml',
         'script_name': req.path,
         'get_data': req.args.copy(),
@@ -64,7 +64,7 @@ def prepare_flask_request(req):
     }
 
 
-saml_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'saml')
+saml_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config')
 
 
 def init_saml_auth(req):
@@ -142,7 +142,7 @@ def index():
         not_auth_warn=not_auth_warn)
 
 
-@blueprint.route('/metadata/', methods=['GET'])
+@blueprint.route('/metadata', methods=['GET'])
 def saml_metadata():
     req = prepare_flask_request(request)
     auth = init_saml_auth(req)
