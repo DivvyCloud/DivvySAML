@@ -65,7 +65,7 @@ needed to run the plugin. However, detailed below are the full options for confi
 4. Note: If using localhost:8000 or 127.0.0.1:8000, the domain set with the IDP must be the same as the
 domain used in the browser. You cannot authenticate from localhost:8000 with IDP settings 127.0.0.1:8000.
 
-```json
+```
 {
     // If strict is True, then the Python Toolkit will reject unsigned
     // or unencrypted messages if it expects them to be signed or encrypted.
@@ -198,7 +198,7 @@ domain used in the browser. You cannot authenticate from localhost:8000 with IDP
 
 In addition to the required settings data (idp, sp), extra settings can be defined in advanced_settings.json:
 
-```json
+```
 {
     // Security settings
     "security": {
