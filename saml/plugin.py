@@ -64,7 +64,7 @@ def prepare_flask_request(req):
     }
 
 
-saml_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config')
+saml_path = os.path.join(os.path.dirname(__file__), 'config')
 
 
 def init_saml_auth(req):
@@ -72,74 +72,92 @@ def init_saml_auth(req):
     return auth
 
 
-@blueprint.route('/', methods=['GET', 'POST'])
-@SharedSessionScope(DivvyCloudGatewayORM)
+@blueprint.route('/', methods=['GET'])
 def index():
-    db = DivvyCloudGatewayORM()
-    saml_req = prepare_flask_request(request)
-    auth = init_saml_auth(saml_req)
     errors = []
     not_auth_warn = False
     configured = True
-
-    if 'sso' in request.args:
-        logger.info("Initiate SAML SSO Request.")
-        return redirect(auth.login())
-
-    elif 'acs' in request.args:
-        logger.info("Processing SAML 'acs' Response")
-        auth.process_response()
-        errors = auth.get_errors()
-        not_auth_warn = not auth.is_authenticated()
-
-        if errors:
-            logger.error("SAML Response Errors: %s", errors)
-
-        else:
-            username = auth.get_nameid()
-            logger.debug(
-                "Attempting Authentication for NameID: %s", auth.get_nameid
-            )
-
-            try:
-                session_data = db.LoginUser(username)
-                logger.info("SAML: Found user with NameID")
-
-                user_resource_id = ResourceIds.DivvyUser(user_id=session_data['user'].user_id)
-                session_permissions = SessionPermissions.load_for_user(user_resource_id=user_resource_id)
-                divvysession = create_session(session_permissions=session_permissions, **session_data)
-
-                # After Success redirect to Console App
-                response = redirect(
-                    auth.redirect_to(
-                        redirect_url(
-                            request_protocol(request),
-                            request.host
-                        )
-                    )
-                )
-                response.set_cookie('session_id', divvysession.session_id)
-
-                return response
-
-            except NoResultFound:
-                logger.error("SAML: No User found with NameID. Create new user with SSO id as username.")
-                errors.append("SAML: No User found with NameID. Create new user with SSO id as username.")
-
-                return render_template(
-                    'index.html',
-                    errors=errors,
-                    configured=configured,
-                    domain=request.url_root,
-                    not_auth_warn=not_auth_warn
-                )
 
     return render_template(
         'index.html',
         errors=errors,
         configured=configured,
         domain=request.url_root,
-        not_auth_warn=not_auth_warn)
+        not_auth_warn=not_auth_warn
+    )
+
+
+@blueprint.route('/sso', methods=['GET'])
+def sso():
+    logger.info("Initiate SAML SSO Request.")
+    saml_req = prepare_flask_request(request)
+    auth = init_saml_auth(saml_req)
+    return redirect(auth.login())
+
+
+@blueprint.route('/acs', methods=['POST'])
+@SharedSessionScope(DivvyCloudGatewayORM)
+def acs():
+    logger.info("Processing SAML 'acs' Response")
+    db = DivvyCloudGatewayORM()
+    saml_req = prepare_flask_request(request)
+    auth = init_saml_auth(saml_req)
+    errors = []
+    not_auth_warn = False
+    configured = True
+    import pudb; pudb.set_trace()
+    auth.process_response()
+    errors = auth.get_errors()
+    not_auth_warn = not auth.is_authenticated()
+
+    if errors:
+        logger.error("SAML Response Errors: %s", errors)
+        return render_template(
+            'index.html',
+            errors=errors,
+            configured=configured,
+            domain=request.url_root,
+            not_auth_warn=not_auth_warn
+        )
+
+    else:
+        username = auth.get_nameid()
+        logger.debug(
+            "Attempting Authentication for NameID: %s", auth.get_nameid
+        )
+
+        try:
+            session_data = db.LoginUser(username)
+            logger.info("SAML: Found user with NameID")
+
+            user_resource_id = ResourceIds.DivvyUser(user_id=session_data['user'].user_id)
+            session_permissions = SessionPermissions.load_for_user(user_resource_id=user_resource_id)
+            divvysession = create_session(session_permissions=session_permissions, **session_data)
+
+            # After Success redirect to Console App
+            response = redirect(
+                auth.redirect_to(
+                    redirect_url(
+                        request_protocol(request),
+                        request.host
+                    )
+                )
+            )
+            response.set_cookie('session_id', divvysession.session_id)
+
+            return response
+
+        except NoResultFound:
+            logger.error("SAML: No User found with NameID. Create new user with SSO id as username.")
+            errors.append("SAML: No User found with NameID. Create new user with SSO id as username.")
+
+            return render_template(
+                'index.html',
+                errors=errors,
+                configured=configured,
+                domain=request.url_root,
+                not_auth_warn=not_auth_warn
+            )
 
 
 @blueprint.route('/metadata', methods=['GET'])
