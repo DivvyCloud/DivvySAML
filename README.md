@@ -60,8 +60,8 @@ needed to run the plugin. However, detailed below are the full options for confi
 
 ##### Provide IDP with these settings:
 1. SAML Audience = (http://example.com)/plugin/saml/metadata
-2. SAML Recipient = (http://example.com)/plugin/saml/?acs
-3. SAML Single Logout url = (http://example.com)/plugin/saml/?sls
+2. SAML Recipient = (http://example.com)/plugin/saml/acs
+3. SAML Single Logout url = (http://example.com)/plugin/saml/sls
 4. Note: If using localhost:8000 or 127.0.0.1:8000, the domain set with the IDP must be the same as the
 domain used in the browser. You cannot authenticate from localhost:8000 with IDP settings 127.0.0.1:8000.
 
@@ -84,7 +84,7 @@ domain used in the browser. You cannot authenticate from localhost:8000 with IDP
         // returned to the requester, in this case our SP.
         "assertionConsumerService": {
             // URL Location where the <Response> from the IdP will be returned
-            "url": "https://<sp_domain>/?acs",
+            "url": "https://<sp_domain>/plugin/saml/acs",
             // SAML protocol binding to be used when returning the <Response>
             // message. OneLogin Toolkit supports this endpoint for the
             // HTTP-POST binding only.
@@ -110,7 +110,7 @@ domain used in the browser. You cannot authenticate from localhost:8000 with IDP
         // returned to the requester, in this case our SP.
         "singleLogoutService": {
             // URL Location where the <Response> from the IdP will be returned
-            "url": "https://<sp_domain>/?sls",
+            "url": "https://<sp_domain>/plugin/saml/sls",
             // SAML protocol binding to be used when returning the <Response>
             // message. OneLogin Toolkit supports the HTTP-Redirect binding
             // only for this endpoint.
