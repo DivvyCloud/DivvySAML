@@ -105,7 +105,6 @@ def acs():
     errors = []
     not_auth_warn = False
     configured = True
-    import pudb; pudb.set_trace()
     auth.process_response()
     errors = auth.get_errors()
     not_auth_warn = not auth.is_authenticated()
@@ -177,6 +176,7 @@ def saml_metadata():
 
 
 def load():
+
     register_api_blueprint(blueprint)
 
 
