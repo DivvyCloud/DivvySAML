@@ -4,11 +4,11 @@
     "sp": {
         "entityId": "https://<sp_domain>/plugin/saml/metadata/",
         "assertionConsumerService": {
-            "url": "https://<sp_domain>/plugin/saml?acs",
+            "url": "https://<sp_domain>/plugin/saml/acs",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
         },
         "singleLogoutService": {
-            "url": "https://<sp_domain>/plugin/saml?sls",
+            "url": "https://<sp_domain>/plugin/saml/sls",
             "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
         },
         "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified",
