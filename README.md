@@ -8,6 +8,12 @@ This libray works by configuring the json files used by `python-saml`, two examp
 included in this repository. For full reference to config options please reference the `python-saml`
 project README.
 
+## Deprication Warning:
+SAML support is included in DivvyCloud core starting in v18.4. Note, the `python-saml` dependency is
+not included by default in the installation instructions for non-docker installs.
+However the docker image includes the dependencies. See
+[docs.divvycloud.com](http://docs.divvycloud.com) for more details.
+
 ## Dependencies:
 DivvyCloud v17.01 or greater
 
